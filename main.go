@@ -69,7 +69,9 @@ func MidJwt() gin.HandlerFunc {
 		token := c.GetHeader("Authorization")
 		if token == "" {
 			c.JSON(http.StatusOK, gin.H{
-				"message": "token not exist",
+				"errno": "111",
+				"errmsg": "请重新登录",
+				"data": nil,
 			})
 
 			c.Abort()
@@ -85,7 +87,9 @@ func MidJwt() gin.HandlerFunc {
 
 		if cla.ExpiresAt < time.Now().Unix() {
 			c.JSON(http.StatusOK, gin.H{
-				"message": "登录过期",
+				"errno": "111",
+				"errmsg": "登录过期",
+				"data": nil,
 			})
 		}
 
@@ -121,6 +125,7 @@ func Login(db *gorm.DB) gin.HandlerFunc {
 					"errmsg": "登录成功",
 					"data": gin.H{
 						"token": token,
+						"username": username,
 						"role": "管理员",
 					},
 				})
@@ -142,6 +147,7 @@ func Login(db *gorm.DB) gin.HandlerFunc {
 					"errmsg": "登录成功",
 					"data": gin.H{
 						"token": token,
+						"username": username,
 						"role": "普通用户",
 					},
 				})
