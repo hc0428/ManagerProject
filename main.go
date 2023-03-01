@@ -22,7 +22,7 @@ var JwtKey = []byte("www.auth.com")
 
 type Claims struct {
 	Username string
-	Power int
+	Power    int
 	jwt.StandardClaims
 }
 
@@ -33,8 +33,8 @@ func SetToken(username string, power int) (string, error) {
 		power,
 		jwt.StandardClaims{
 			ExpiresAt: expireTime.Unix(),
-			Issuer: "127.0.0.1",
-			Subject: "user token",
+			Issuer:    "127.0.0.1",
+			Subject:   "user token",
 		},
 	}
 
@@ -69,9 +69,9 @@ func MidJwt() gin.HandlerFunc {
 		token := c.GetHeader("Authorization")
 		if token == "" {
 			c.JSON(http.StatusOK, gin.H{
-				"errno": "111",
+				"errno":  "111",
 				"errmsg": "请重新登录",
-				"data": nil,
+				"data":   nil,
 			})
 
 			c.Abort()
@@ -87,9 +87,9 @@ func MidJwt() gin.HandlerFunc {
 
 		if cla.ExpiresAt < time.Now().Unix() {
 			c.JSON(http.StatusOK, gin.H{
-				"errno": "111",
+				"errno":  "111",
 				"errmsg": "登录过期",
-				"data": nil,
+				"data":   nil,
 			})
 		}
 
@@ -113,42 +113,42 @@ func Login(db *gorm.DB) gin.HandlerFunc {
 				if err != nil {
 					fmt.Println(err)
 					c.JSON(http.StatusOK, gin.H{
-						"errno": "110",
+						"errno":  "110",
 						"errmsg": "登录失败",
-						"data": nil,
+						"data":   nil,
 					})
 					return
 				}
 
 				c.JSON(http.StatusOK, gin.H{
-					"errno": "0",
+					"errno":  "0",
 					"errmsg": "登录成功",
 					"data": gin.H{
-						"token": token,
+						"token":    token,
 						"username": username,
-						"role": "管理员",
+						"role":     "管理员",
 					},
 				})
 			} else {
-				token, err :=SetToken(u.Name, 0)
+				token, err := SetToken(u.Name, 0)
 
 				if err != nil {
 					fmt.Println(err)
 					c.JSON(http.StatusOK, gin.H{
-						"errno": "110",
+						"errno":  "110",
 						"errmsg": "登录失败",
-						"data": nil,
+						"data":   nil,
 					})
 					return
 				}
 
 				c.JSON(http.StatusOK, gin.H{
-					"errno": "0",
+					"errno":  "0",
 					"errmsg": "登录成功",
 					"data": gin.H{
-						"token": token,
+						"token":    token,
 						"username": username,
-						"role": "普通用户",
+						"role":     "普通用户",
 					},
 				})
 			}
@@ -177,17 +177,14 @@ func main() {
 		"parseTime=true",
 	)
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{
-		Logger: logger.Default.LogMode(logger.Info),
+		Logger:                 logger.Default.LogMode(logger.Info),
 		SkipDefaultTransaction: true,
-
 	})
-
 
 	if err != nil {
 		fmt.Println("connect mysql error ", err)
 		return
 	}
-
 
 	r := gin.Default()
 
@@ -224,17 +221,17 @@ func main() {
 			if err != nil {
 				fmt.Println("json marshal fail", err)
 				c.JSON(http.StatusOK, gin.H{
-					"errno": "1010",
+					"errno":  "1010",
 					"errmsg": "系统繁忙~请重试",
-					"data": nil,
+					"data":   nil,
 				})
 				return
 			}
 
 			c.JSON(http.StatusOK, gin.H{
-				"errno": "0",
+				"errno":  "0",
 				"errmsg": "查询成功",
-				"data": string(data),
+				"data":   string(data),
 			})
 		})
 
@@ -243,27 +240,27 @@ func main() {
 			if !ext {
 				fmt.Println("获取相应权限失败")
 				c.JSON(http.StatusOK, gin.H{
-					"errno": "1010",
+					"errno":  "1010",
 					"errmsg": "系统繁忙~请重试",
-					"data": nil,
+					"data":   nil,
 				})
 				return
 			}
 
 			if power == 0 {
 				c.JSON(http.StatusOK, gin.H{
-					"errno": "2",
+					"errno":  "2",
 					"errmsg": "无相应权限",
-					"data": nil,
+					"data":   nil,
 				})
 			} else {
 				b, err := c.GetRawData()
 				if err != nil {
 					fmt.Println("插入书籍获取相应json数据时失败", err)
 					c.JSON(http.StatusOK, gin.H{
-						"errno": "3",
+						"errno":  "3",
 						"errmsg": "没输入相应查询词",
-						"data": nil,
+						"data":   nil,
 					})
 					return
 				}
@@ -273,18 +270,18 @@ func main() {
 				if err != nil {
 					fmt.Println("插入书籍 json unmarshal 失败", err)
 					c.JSON(http.StatusOK, gin.H{
-						"errno": "1010",
+						"errno":  "1010",
 						"errmsg": "系统繁忙~请重试",
-						"data": nil,
+						"data":   nil,
 					})
 					return
 				}
 				db.Table("book").Select("name", "author", "floor", "block", "bookshelf", "bookshelf_level", "exist").Create(&book)
 
 				c.JSON(http.StatusOK, gin.H{
-					"errno": "0",
+					"errno":  "0",
 					"errmsg": "SUCCESS",
-					"data": nil,
+					"data":   nil,
 				})
 			}
 
@@ -295,44 +292,44 @@ func main() {
 			if !ext {
 				fmt.Println("获取相应权限失败")
 				c.JSON(http.StatusOK, gin.H{
-					"errno": "1010",
+					"errno":  "1010",
 					"errmsg": "系统繁忙~请重试",
-					"data": nil,
+					"data":   nil,
 				})
 				return
 			}
 
 			if power == 0 {
 				c.JSON(http.StatusOK, gin.H{
-					"errno": "2",
+					"errno":  "2",
 					"errmsg": "无相应权限",
-					"data": nil,
+					"data":   nil,
 				})
 			} else {
 				id, ok := c.GetQuery("id")
 				if !ok {
 					c.JSON(http.StatusOK, gin.H{
-						"errno": "12",
+						"errno":  "12",
 						"errmsg": "请输入id",
-						"data": nil,
+						"data":   nil,
 					})
 				}
 
 				ext, ok := c.GetQuery("exist")
 				if !ok {
 					c.JSON(http.StatusOK, gin.H{
-						"errno": "13",
+						"errno":  "13",
 						"errmsg": "请更新相应信息",
-						"data": nil,
+						"data":   nil,
 					})
 				}
 
 				db.Table("book").Where("id = ? ", id).Update("exist", ext)
 
 				c.JSON(http.StatusOK, gin.H{
-					"errno": "0",
+					"errno":  "0",
 					"errmsg": "SUCCESS",
-					"data": nil,
+					"data":   nil,
 				})
 			}
 		})
@@ -342,81 +339,80 @@ func main() {
 			if !ext {
 				fmt.Println("获取相应权限失败")
 				c.JSON(http.StatusOK, gin.H{
-					"errno": "1010",
+					"errno":  "1010",
 					"errmsg": "系统繁忙~请重试",
-					"data": nil,
+					"data":   nil,
 				})
 				return
 			}
 
 			if power == 0 {
 				c.JSON(http.StatusOK, gin.H{
-					"errno": "2",
+					"errno":  "2",
 					"errmsg": "无相应权限",
-					"data": nil,
+					"data":   nil,
 				})
 			} else {
 				author, ok := c.GetQuery("author")
 				if !ok {
 					c.JSON(http.StatusOK, gin.H{
-						"errno": "4",
+						"errno":  "4",
 						"errmsg": "请输入作者",
-						"data": nil,
+						"data":   nil,
 					})
 				}
 
 				name, ok := c.GetQuery("name")
 				if !ok {
 					c.JSON(http.StatusOK, gin.H{
-						"errno": "5",
+						"errno":  "5",
 						"errmsg": "请输入书名",
-						"data": nil,
+						"data":   nil,
 					})
 				}
 
 				floor, ok := c.GetQuery("floor")
 				if !ok {
 					c.JSON(http.StatusOK, gin.H{
-						"errno": "6",
+						"errno":  "6",
 						"errmsg": "请输入楼层",
-						"data": nil,
+						"data":   nil,
 					})
 				}
 
 				block, ok := c.GetQuery("block")
 				if !ok {
 					c.JSON(http.StatusOK, gin.H{
-						"errno": "7",
+						"errno":  "7",
 						"errmsg": "请输入区域",
-						"data": nil,
+						"data":   nil,
 					})
 				}
 
 				bookshelf, ok := c.GetQuery("bookshelf")
 				if !ok {
 					c.JSON(http.StatusOK, gin.H{
-						"errno": "8",
+						"errno":  "8",
 						"errmsg": "请输入书架编号",
-						"data": nil,
+						"data":   nil,
 					})
 				}
 
 				bookshelf_level, ok := c.GetQuery("bookshelf_level")
 				if !ok {
 					c.JSON(http.StatusOK, gin.H{
-						"errno": "9",
+						"errno":  "9",
 						"errmsg": "请输入书架书层",
-						"data": nil,
+						"data":   nil,
 					})
 				}
-
 
 				db.Table("book").Where("name = ? and author = ? ", name, author).Updates(map[string]interface{}{"floor": floor, "block": block, "bookshelf": bookshelf, "bookshelf_level": bookshelf_level})
 
 				c.JSON(http.StatusOK, gin.H{
-					"errno": "0",
+					"errno":  "0",
 					"errmsg": "SUCCESS",
-					"data": nil,
+					"data":   nil,
 				})
 			}
 		})
@@ -426,26 +422,26 @@ func main() {
 			if !ext {
 				fmt.Println("获取相应权限失败")
 				c.JSON(http.StatusOK, gin.H{
-					"errno": "1010",
+					"errno":  "1010",
 					"errmsg": "系统繁忙~请重试",
-					"data": nil,
+					"data":   nil,
 				})
 				return
 			}
 
 			if power == 0 {
 				c.JSON(http.StatusOK, gin.H{
-					"errno": "2",
+					"errno":  "2",
 					"errmsg": "无相应权限",
-					"data": nil,
+					"data":   nil,
 				})
 			} else {
 				id, ok := c.GetQuery("id")
 				if !ok {
 					c.JSON(http.StatusOK, gin.H{
-						"errno": "10",
+						"errno":  "10",
 						"errmsg": "请输入相应书籍id进行删除",
-						"data": nil,
+						"data":   nil,
 					})
 				}
 
@@ -454,9 +450,9 @@ func main() {
 				db.Table("book").Delete(&book, id)
 
 				c.JSON(http.StatusOK, gin.H{
-					"errno": "0",
+					"errno":  "0",
 					"errmsg": "SUCCESS",
-					"data": nil,
+					"data":   nil,
 				})
 			}
 		})
@@ -466,35 +462,35 @@ func main() {
 			if !ext {
 				fmt.Println("获取相应权限失败")
 				c.JSON(http.StatusOK, gin.H{
-					"errno": "1010",
+					"errno":  "1010",
 					"errmsg": "系统繁忙~请重试",
-					"data": nil,
+					"data":   nil,
 				})
 				return
 			}
 
 			if power == 0 {
 				c.JSON(http.StatusOK, gin.H{
-					"errno": "2",
+					"errno":  "2",
 					"errmsg": "无相应权限",
-					"data": nil,
+					"data":   nil,
 				})
 			} else {
 				name, ok := c.GetQuery("name")
 				if !ok {
 					c.JSON(http.StatusOK, gin.H{
-						"errno": "10",
+						"errno":  "10",
 						"errmsg": "请输入相应书籍名称进行删除",
-						"data": nil,
+						"data":   nil,
 					})
 				}
 
 				author, ok := c.GetQuery("author")
 				if !ok {
 					c.JSON(http.StatusOK, gin.H{
-						"errno": "11",
+						"errno":  "11",
 						"errmsg": "请输入相应书籍作者进行删除",
-						"data": nil,
+						"data":   nil,
 					})
 				}
 
@@ -503,14 +499,16 @@ func main() {
 				db.Table("book").Where("name = ? and author = ?", name, author).Delete(&book)
 
 				c.JSON(http.StatusOK, gin.H{
-					"errno": "0",
+					"errno":  "0",
 					"errmsg": "SUCCESS",
-					"data": nil,
+					"data":   nil,
 				})
 			}
 		})
 	}
 
 	r.Run(":8080")
+
+	//test git
 
 }
